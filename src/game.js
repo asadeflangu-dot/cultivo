@@ -10,9 +10,12 @@ window.GameEngine = {
         UIManager.init();
         this.state = SaveManager.load();
 
+        const creationModal = document.getElementById("character-creation-modal");
+
         if (!this.state.playerCreated) {
             this.showCreationModal();
         } else {
+            creationModal.classList.add("hidden");
             this.processOfflineProgress();
             this.startGameLoop();
         }
@@ -20,6 +23,7 @@ window.GameEngine = {
         this.bindEvents();
         UIManager.update(this.state);
     },
+
 
     showCreationModal() {
         const modal = document.getElementById("character-creation-modal");
