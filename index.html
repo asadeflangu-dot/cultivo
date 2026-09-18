@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Caminho do Cultivo - Xianxia Idle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- MODAL DE CRIAÇÃO DE PERSONAGEM -->
+        <div id="character-creation-modal" class="modal">
+            <div class="modal-content card">
+                <h2>Iniciar Jornada Imortal</h2>
+                
+                <div class="form-group">
+                    <label for="input-name">Nome do Cultivador:</label>
+                    <input type="text" id="input-name" placeholder="Ex: Lin Feng" maxlength="20">
+                </div>
+
+                <div class="form-group">
+                    <label>Escolha o Caminho:</label>
+                    <div class="path-selector">
+                        <button class="btn btn-path active" data-path="Orthodox">Ortodoxo</button>
+                        <button class="btn btn-path" data-path="Unorthodox">Não Ortodoxo</button>
+                        <button class="btn btn-path" data-path="Demonic">Demoníaco</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Constituição Corporal:</label>
+                    <div class="body-selection-type">
+                        <button id="btn-body-random" class="btn">Sortear Corpo</button>
+                        <button id="btn-body-select" class="btn btn-secondary">Escolher Corpo</button>
+                    </div>
+                    <div id="body-options" class="body-list hidden"></div>
+                    <div id="selected-body-info" class="info-box"></div>
+                </div>
+
+                <button id="btn-start-game" class="btn btn-primary full-width">Iniciar Cultivo</button>
+            </div>
+        </div>
+
+        <!-- MODAL RESUMO OFFLINE -->
+        <div id="offline-modal" class="modal hidden">
+            <div class="modal-content card">
+                <h2>Progresso Offline</h2>
+                <p id="offline-time-text"></p>
+                <div class="info-box">
+                    <p id="offline-gains-text"></p>
+                </div>
+                <button id="btn-close-offline" class="btn btn-primary full-width">Compreender Insights</button>
+            </div>
+        </div>
+
+        <!-- INTERFACE PRINCIPAL DO JOGO -->
+        <header class="header card">
+            <div class="player-profile">
+                <div>
+                    <h1 id="ui-player-name">--</h1>
+                    <span id="ui-player-path" class="badge">--</span>
+                    <span id="ui-player-body" class="badge badge-accent">--</span>
+                </div>
+                <div class="realm-badge">
+                    <div id="ui-realm-name">Reino 1</div>
+                    <div id="ui-stage-name">Estágio 1/10</div>
+                </div>
+            </div>
+
+            <div class="resources-bar">
+                <div class="resource-item">
+                    <span class="res-label">Qi:</span>
+                    <span id="ui-qi" class="res-value">0</span>
+                </div>
+                <div id="container-essence" class="resource-item hidden">
+                    <span class="res-label">Essência:</span>
+                    <span id="ui-essence" class="res-value">0</span>
+                </div>
+                <div class="resource-item">
+                    <span class="res-label">Stamina:</span>
+                    <span id="ui-stamina" class="res-value">100/100</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- PAINEL DE CULTIVO -->
+            <section id="tab-cultivation" class="tab-content active">
+                <div class="cultivation-core card">
+                    <div class="progress-container">
+                        <div class="progress-labels">
+                            <span>Progresso do Estágio</span>
+                            <span id="ui-qi-progress-text">0 / 100 Qi</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="ui-qi-bar" class="progress-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-label">Qi / Clique</span>
+                            <span id="ui-qi-per-click" class="stat-value">1</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Qi / Segundo</span>
+                            <span id="ui-qi-per-sec" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Sorte de Quebra</span>
+                            <span id="ui-break-luck" class="stat-value">5%</span>
+                        </div>
+                    </div>
+
+                    <div class="action-zone">
+                        <button id="btn-cultivate" class="btn btn-cultivate">CULTIVAR</button>
+                        <button id="btn-breakthrough" class="btn btn-breakthrough hidden">TENTAR QUEBRA DE ESTÁGIO</button>
+                    </div>
+                </div>
+
+                <div class="upgrades-section card">
+                    <h3>Melhorias de Cultivo</h3>
+                    <div id="upgrades-list" class="upgrades-grid"></div>
+                </div>
+            </section>
+
+            <!-- TABS FUTURAS (SISTEMA DE UNLOCK) -->
+            <section id="tab-character" class="tab-content hidden card">
+                <h3>Atributos e Constituição</h3>
+                <div id="character-details"></div>
+            </section>
+
+            <section id="tab-settings" class="tab-content hidden card">
+                <h3>Gerenciamento de Save</h3>
+                <div class="settings-grid">
+                    <button id="btn-save-manual" class="btn">Salvar Jogo</button>
+                    <button id="btn-export-save" class="btn">Exportar Save (JSON)</button>
+                    <button id="btn-import-trigger" class="btn btn-secondary">Importar Save</button>
+                    <input type="file" id="file-import-save" accept=".json" class="hidden">
+                    <button id="btn-reset-game" class="btn btn-danger">Reiniciar Progresso</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- NAVEGAÇÃO MOBILE-FIRST -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-tab="tab-cultivation">Cultivo</button>
+            <button class="nav-btn" data-tab="tab-character">Personagem</button>
+            <button class="nav-btn" data-tab="tab-settings">Opções</button>
+        </nav>
+    </div>
+
+    <!-- SCRIPTS MÓDULOS -->
+    <script src="src/data.js"></script>
+    <script src="src/formulas.js"></script>
+    <script src="src/save.js"></script>
+    <script src="src/ui.js"></script>
+    <script src="src/game.js"></script>
+</body>
+</html>
